@@ -1,54 +1,84 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-#define MaxTeamNumber 15//çƒé˜Ÿæ•°é‡
-#define MaxYearNumber 3//å¹´ä»½æ•°é‡
-#define MaxCenterClusterNumber 3//é€‰å–çš„ä¸­å¿ƒç°‡æ•°é‡
-#define MaxNumber 1000.0//å®šä¹‰çš„æœ€å¤§æˆç»©å€¼
-#define MinNumber 0.0//å®šä¹‰çš„æœ€å°æˆç»©å€¼
+#define MaxTeamNumber 15//Çò¶ÓÊıÁ¿
+#define MaxYearNumber 3//Äê·İÊıÁ¿
+#define MaxCenterClusterNumber 3//Ñ¡È¡µÄÖĞĞÄ´ØÊıÁ¿
+#define MaxNumber 1000.0//¶¨ÒåµÄ×î´ó³É¼¨Öµ
+#define MinNumber 0.0//¶¨ÒåµÄ×îĞ¡³É¼¨Öµ
 
-typedef double GRADE_TYPE;//é‡å®šä¹‰æˆç»©çš„æ•°æ®ç±»å‹
-typedef double INSTANCE_TYPE;//çƒé˜Ÿåˆ°ä¸­å¿ƒç°‡çš„è·ç¦»æ•°æ®ç±»å‹
-typedef int TEAMID_TYPE;//çƒé˜Ÿçš„IDæ•°æ®ç±»å‹
-typedef int CENTERCLUSTERID_TYPE;//ä¸­å¿ƒç°‡çš„IDæ•°æ®ç±»å‹
+typedef double INSTANCE_TYPE;//Çò¶Óµ½ÖĞĞÄ´ØµÄ¾àÀëÊı¾İÀàĞÍ
+typedef double GRADE_TYPE;//ÖØ¶¨Òå³É¼¨µÄÊı¾İÀàĞÍ  0.1875ËÄÉáÎåÈë³É0.1899995ÊÇfloatµ¼ÖÂµÄ¡£ËùÒÔĞèÒª¶¨Òå³Édouble
+typedef int TEAMID_TYPE;//Çò¶ÓµÄIDÊı¾İÀàĞÍ
+typedef int CENTERCLUSTERID_TYPE;//ÖĞĞÄ´ØµÄIDÊı¾İÀàĞÍ
 /*
- * å¹´ä»½ç»“æ„ä½“
+ * Äê·İ½á¹¹Ìå
  */
 typedef struct year {
     GRADE_TYPE grade;
 } Year;
 
 /*
- * å›½å®¶ç»“æ„ä½“
+ * ¹ú¼Ò½á¹¹Ìå
  */
 typedef struct team {
-    TEAMID_TYPE teamId;//çƒé˜Ÿçš„ID
-    CENTERCLUSTERID_TYPE centerClusterId;//æ‰€å±ä¸­å¿ƒç°‡çš„ID
-    Year years[MaxYearNumber];//å¹´ä»½æ•°ç»„
-    INSTANCE_TYPE instances[MaxCenterClusterNumber];//çƒé˜Ÿåˆ°ä¸­å¿ƒç°‡çš„è·ç¦»æ•°ç»„
+    TEAMID_TYPE teamId;//Çò¶ÓµÄID
+    CENTERCLUSTERID_TYPE centerClusterId;//ËùÊôÖĞĞÄ´ØµÄID
+    Year years[MaxYearNumber];//Äê·İÊı×é
+    INSTANCE_TYPE instances[MaxCenterClusterNumber];//Çò¶Óµ½ÖĞĞÄ´ØµÄ¾àÀëÊı×é
 } Team;
 
 /*
- * éœ€è¦ç”¨åˆ°çš„ä¸€äº›å·¥å…·æ–¹æ³•
+ * ĞèÒªÓÃµ½µÄÒ»Ğ©¹¤¾ß·½·¨
  */
-GRADE_TYPE findMax(GRADE_TYPE *grades);//æ‰¾æœ€å¤§æˆç»©
-GRADE_TYPE findMin(GRADE_TYPE *grades);//æ‰¾æœ€å°æˆç»©
+GRADE_TYPE findMax(GRADE_TYPE *grades);//ÕÒ×î´ó³É¼¨
+GRADE_TYPE findMin(GRADE_TYPE *grades);//ÕÒ×îĞ¡³É¼¨
 /*
- * ä¼ å…¥çƒé˜Ÿæ•°ç»„ï¼Œè¿›è¡Œè§„æ ¼åŒ–å¤„ç†
+ * ´«ÈëÇò¶ÓÊı×é£¬½øĞĞ¹æ¸ñ»¯´¦Àí
  */
 void standardGrade(Team *teams);
 
 /*
- * ä¼ å…¥æœ€å¤§å€¼ï¼Œæœ€å°å€¼å’Œå¾…è§„æ ¼åŒ–çš„å€¼
+ * ´«Èë×î´óÖµ£¬×îĞ¡ÖµºÍ´ı¹æ¸ñ»¯µÄÖµ
  */
-GRADE_TYPE standardData(GRADE_TYPE Max,GRADE_TYPE Min,GRADE_TYPE unStandardData);
+GRADE_TYPE standardData(GRADE_TYPE Max, GRADE_TYPE Min, GRADE_TYPE unStandardData);
 
 /*
- * åˆå§‹åŒ–ä¸­å¿ƒç°‡ï¼Œæ ¹æ®ä¼ è¿›æ¥çš„
+ * ³õÊ¼»¯ÖĞĞÄ´Ø£¬¸ù¾İ´«½øÀ´µÄid½øĞĞ³õÊ¼»¯
  */
+void init_CenterCluster(Team *CenterClusters, Team *teams);
 
+/*
+ * ³õÊ¼»¯³É¼¨Êı¾İ
+ */
+void init_GradeData(Team *teams);
+
+/*
+ * ³õÊ¼»¯¾àÀëÊı¾İ 
+ */
+void init_Instance(Team *CenterClusters, Team *teams);
+
+/*
+ * ´«ÈëÁ½¸ö¹ú¼Ò¶ÔÏó£¬½øĞĞ¾àÀë¼ÆËã
+ */
+GRADE_TYPE caculateInstance(Team team, Team centerCluster);
+
+void findCenterCluster(Team *CenterClusters, Team *teams);
+
+void idToTeamName(int id);
+
+void idToClusterName(int id);
 
 int main() {
-    printf("Hello, World!\n");
+    Team teams[MaxTeamNumber];
+    Team centerClusters[MaxCenterClusterNumber];
+
+    init_GradeData(teams);
+    standardGrade(teams);
+    init_CenterCluster(centerClusters, teams);
+    init_Instance(centerClusters, teams);
+    findCenterCluster(centerClusters, teams);
     return 0;
 }
 
@@ -71,26 +101,151 @@ GRADE_TYPE findMin(GRADE_TYPE *grades) {
     }
     return result;
 }
-GRADE_TYPE standardData(GRADE_TYPE Max,GRADE_TYPE Min,GRADE_TYPE unStandardData){
+
+GRADE_TYPE standardData(GRADE_TYPE Max, GRADE_TYPE Min, GRADE_TYPE unStandardData) {
     GRADE_TYPE result;
-    result=(unStandardData-Min)/(Max-Min);
+    result = (unStandardData - Min) / (Max - Min);
+    //ËÄÉáÎåÈë±£ÁôÁ½Î»²Ù×÷
+    result = (int) (100.0 * result + 0.5) / 100.0;
     return result;
 }
-void standardGrade(Team *teams){
-    GRADE_TYPE grades[MaxYearNumber][MaxTeamNumber];//çºµå‘çš„å¹´ä»½æˆç»©äºŒç»´æ•°ç»„
 
-    for (int i = 0; i <MaxYearNumber ; ++i) {
-        for (int j = 0; j <MaxTeamNumber ; ++j) {
-            grades[i][j]=teams[j].years[i].grade;
+void standardGrade(Team *teams) {
+    GRADE_TYPE grades[MaxYearNumber][MaxTeamNumber];//×İÏòµÄÄê·İ³É¼¨¶şÎ¬Êı×é
+
+    for (int i = 0; i < MaxYearNumber; ++i) {
+        for (int j = 0; j < MaxTeamNumber; ++j) {
+            grades[i][j] = teams[j].years[i].grade;
         }
     }
-    //è§„æ ¼åŒ–æ“ä½œ
-    for (int j = 0; j <MaxTeamNumber ; ++j) {
+    //¹æ¸ñ»¯²Ù×÷
+    for (int j = 0; j < MaxTeamNumber; ++j) {
         for (int i = 0; i < MaxYearNumber; ++i) {
             GRADE_TYPE MaxGrade = findMax(grades[i]);
             GRADE_TYPE MinGrad = findMin(grades[i]);
-            //å½’ä¸€åŒ–æ›´æ–°æ“ä½œ
-            teams[j].years[i].grade=standardData(MaxGrade, MinGrad, teams[j].years[i].grade);
+            //¹éÒ»»¯¸üĞÂ²Ù×÷
+            teams[j].years[i].grade = standardData(MaxGrade, MinGrad, teams[j].years[i].grade);
         }
     }
 }
+
+void init_CenterCluster(Team *CenterClusters, Team *teams) {
+    for (int i = 0; i < MaxCenterClusterNumber; ++i) {
+        printf("ÇëÊäÈëÄãËùÑ¡ÔñÖĞĞÄ´ØµÄID");
+        int id;
+        scanf("%d", &id);
+        CenterClusters[i] = teams[id - 1];
+        //ÖØĞÂĞŞ¸ÄÒ»ÏÂÖĞĞÄ´ØµÄId£¬·½±ã¶ÔÓ¦A,B,CÀà
+        CenterClusters[i].teamId = i + 1;
+    }
+}
+
+void init_GradeData(Team *teams) {
+    FILE *fp;
+    if ((fp = fopen("D://forthdata//data.txt", "r")) == NULL) {
+        printf("´ò¿ªÊ§°Ü");
+        exit(0);
+    } else {
+        for (int i = 0; i < MaxTeamNumber; ++i) {
+            teams[i].teamId = i + 1;
+            for (int j = 0; j < MaxYearNumber; ++j) {
+                fscanf(fp, " %lf", &teams[i].years[j].grade);
+            }
+        }
+    }
+}
+
+GRADE_TYPE caculateInstance(Team team, Team centerCluster) {
+    GRADE_TYPE result;
+    result = sqrt(pow(team.years[0].grade - centerCluster.years[0].grade, 2) +
+                  pow(team.years[1].grade - centerCluster.years[1].grade, 2) +
+                  pow(team.years[2].grade - centerCluster.years[2].grade, 2));
+    //±£ÁôËÄÎ»Ğ¡Êı²Ù×÷
+    result = (int) (10000.0 * result + 0.5) / 10000.0;
+    return result;
+}
+
+void init_Instance(Team *CenterClusters, Team *teams) {
+    for (int i = 0; i < MaxTeamNumber; ++i) {
+        for (int j = 0; j < MaxCenterClusterNumber; ++j) {
+            teams[i].instances[j] = caculateInstance(teams[i], CenterClusters[j]);
+        }
+    }
+}
+
+void findCenterCluster(Team *CenterClusters, Team *teams) {
+    INSTANCE_TYPE min = MaxNumber;
+    for (int i = 0; i < MaxTeamNumber; ++i) {
+        for (int j = 0; j < MaxCenterClusterNumber; ++j) {
+            if (min > teams[i].instances[j]) {
+                min = teams[i].instances[j];
+                teams[i].centerClusterId = CenterClusters[j].teamId;
+            }
+        }
+        min=MaxNumber;
+    }
+}
+
+void idToClusterName(int id) {
+    switch (id) {
+        case 1:
+            printf("AÀà:\t");
+            break;
+        case 2:
+            printf("BÀà:\t");
+            break;
+        case 3:
+            printf("CÀà:\t");
+            break;
+    }
+}
+
+void idToTeamName(int id) {
+    switch (id) {
+        case 1:
+            printf("1.ÖĞ¹ú\t");
+            break;
+        case 2:
+            printf("2.ÈÕ±¾\t");
+            break;
+        case 3:
+            printf("3.º«¹ú\t");
+            break;
+        case 4:
+            printf("4.ÒÁÀÊ\t");
+            break;
+        case 5:
+            printf("5.É³ÌØ\t");
+            break;
+        case 6:
+            printf("6.ÒÁÀ­¿Ë\t");
+            break;
+        case 7:
+            printf("7.¿¨Ëş¶û\t");
+            break;
+        case 8:
+            printf("8.°¢ÁªÇõ\t");
+            break;
+        case 9:
+            printf("9.ÎÚ×È±ğ¿ËË¹Ì¹\t");
+            break;
+        case 10:
+            printf("10.Ì©¹ú\t");
+            break;
+        case 11:
+            printf("11.Ô½ÄÏ\t");
+            break;
+        case 12:
+            printf("12.°¢Âü\t");
+            break;
+        case 13:
+            printf("13.°ÍÁÖ\t");
+            break;
+        case 14:
+            printf("14.³¯ÏÊ\t");
+            break;
+        case 15:
+            printf("15.Ó¡Äá\t");
+            break;
+    }
+ }
