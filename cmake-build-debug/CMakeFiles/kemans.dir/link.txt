@@ -1,0 +1,3 @@
+"D:\CLion 2020.3.3\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\kemans.dir/objects.a
+D:\MinGW\bin\ar.exe cr CMakeFiles\kemans.dir/objects.a @CMakeFiles\kemans.dir\objects1.rsp
+D:\MinGW\bin\gcc.exe -g   -Wl,--whole-archive CMakeFiles\kemans.dir/objects.a -Wl,--no-whole-archive  -o kemans.exe -Wl,--out-implib,libkemans.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\kemans.dir\linklibs.rsp
